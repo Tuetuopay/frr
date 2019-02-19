@@ -29,10 +29,7 @@
 
 static inline int is_evpn_enabled(void)
 {
-	struct bgp *bgp = NULL;
-
-	bgp = bgp_get_default();
-	return bgp ? bgp->advertise_all_vni : 0;
+	return bgp_get_evpn() != NULL;
 }
 
 static inline void vni2label(vni_t vni, mpls_label_t *label)
