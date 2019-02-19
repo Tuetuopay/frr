@@ -107,22 +107,26 @@ struct zebra_vrf {
 #define MPLS_FLAG_SCHEDULE_LSPS    (1 << 0)
 
 	/*
-	 * VNI hash table (for EVPN). Only in default instance.
+	 * VNI hash table (for EVPN). Only in the EVPN instance.
 	 */
 	struct hash *vni_table;
 
 	/*
-	 * Whether EVPN is enabled or not. Only in default instance.
+	 * Whether EVPN is enabled or not. Only in the EVPN instance.
 	 */
 	int advertise_all_vni;
 
 	/*
 	 * Whether we are advertising g/w macip in EVPN or not.
-	 * Only in default instance.
+	 * Only in the EVPN instance.
 	 */
 	int advertise_gw_macip;
 
 	int advertise_svi_macip;
+	/*
+	 * The EVPN instance, if any
+	 */
+	vrf_id_t evpn_vrf_id;
 
 	/* l3-vni info */
 	vni_t l3vni;
