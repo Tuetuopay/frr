@@ -1835,9 +1835,8 @@ void bgp_zebra_instance_register(struct bgp *bgp)
 	/* Register for router-id, interfaces, redistributed routes. */
 	zclient_send_reg_requests(zclient, bgp->vrf_id);
 
-	/* For default instance, register to learn about VNIs, if appropriate.
-	 */
-	if (bgp->inst_type == BGP_INSTANCE_TYPE_DEFAULT && is_evpn_enabled())
+	/* For EVPN instance, register to learn about VNIs, if appropriate. */
+	if (is_evpn_enabled() && bgp->advertise_all_vni)
 		bgp_zebra_advertise_all_vni(bgp, 1);
 
 	bgp_nht_register_nexthops(bgp);
@@ -1855,9 +1854,8 @@ void bgp_zebra_instance_deregister(struct bgp *bgp)
 	if (BGP_DEBUG(zebra, ZEBRA))
 		zlog_debug("Deregistering VRF %u", bgp->vrf_id);
 
-	/* For default instance, unregister learning about VNIs, if appropriate.
-	 */
-	if (bgp->inst_type == BGP_INSTANCE_TYPE_DEFAULT && is_evpn_enabled())
+	/* For EVPN instance, unregister learning about VNIs, if appropriate. */
+	if (is_evpn_enabled() && bgp->advertise_all_vni)
 		bgp_zebra_advertise_all_vni(bgp, 0);
 
 	/* Deregister for router-id, interfaces, redistributed routes. */

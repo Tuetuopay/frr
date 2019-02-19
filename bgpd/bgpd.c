@@ -3045,6 +3045,18 @@ struct bgp *bgp_lookup_by_vrf_id(vrf_id_t vrf_id)
 	return (vrf->info) ? (struct bgp *)vrf->info : NULL;
 }
 
+/* Returns the BGP instance where EVPN is enabled, if any */
+struct bgp *bgp_get_evpn(void)
+{
+	struct bgp *bgp;
+	struct listnode *node, *nnode;
+
+	for (ALL_LIST_ELEMENTS(bm->bgp, node, nnode, bgp))
+		if (bgp->advertise_all_vni)
+			return bgp;
+	return NULL;
+}
+
 /* handle socket creation or deletion, if necessary
  * this is called for all new BGP instances
  */
