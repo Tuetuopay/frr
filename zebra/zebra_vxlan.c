@@ -322,7 +322,7 @@ static int advertise_gw_macip_enabled(zebra_vni_t *zvni)
 {
 	struct zebra_vrf *zvrf;
 
-	zvrf = vrf_info_lookup(VRF_DEFAULT);
+	zvrf = zebra_vrf_get_evpn();
 	if (zvrf && zvrf->advertise_gw_macip)
 		return 1;
 
