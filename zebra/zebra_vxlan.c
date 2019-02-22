@@ -8779,9 +8779,9 @@ void zebra_vxlan_advertise_svi_macip(ZAPI_HANDLER_ARGS)
 	zebra_vni_t *zvni = NULL;
 	struct interface *ifp = NULL;
 
-	if (zvrf_id(zvrf) != VRF_DEFAULT) {
-		zlog_debug("EVPN GW-MACIP Adv for non-default VRF %u",
-			   zvrf_id(zvrf));
+	if (zvrf_id(zvrf) != zebra_vrf_get_evpn_id()) {
+		zlog_debug("EVPN GW-MACIP Adv for non-EVPN VRF %u",
+			  zvrf_id(zvrf));
 		return;
 	}
 
@@ -8878,9 +8878,9 @@ void zebra_vxlan_advertise_subnet(ZAPI_HANDLER_ARGS)
 	struct zebra_l2info_vxlan zl2_info;
 	struct interface *vlan_if = NULL;
 
-	if (zvrf_id(zvrf) != VRF_DEFAULT) {
-		zlog_debug("EVPN GW-MACIP Adv for non-default VRF %u",
-			   zvrf_id(zvrf));
+	if (zvrf_id(zvrf) != zebra_vrf_get_evpn_id()) {
+		zlog_debug("EVPN GW-MACIP Adv for non-EVPN VRF %u",
+			  zvrf_id(zvrf));
 		return;
 	}
 
