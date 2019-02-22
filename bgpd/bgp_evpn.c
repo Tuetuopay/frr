@@ -168,17 +168,17 @@ static bool vrf_import_rt_hash_cmp(const void *p1, const void *p2)
 }
 
 /*
- * Create a new vrf import_rt in default instance
+ * Create a new vrf import_rt in evpn instance
  */
 static struct vrf_irt_node *vrf_import_rt_new(struct ecommunity_val *rt)
 {
-	struct bgp *bgp_def = NULL;
+	struct bgp *bgp_evpn = NULL;
 	struct vrf_irt_node *irt;
 
-	bgp_def = bgp_get_default();
-	if (!bgp_def) {
+	bgp_evpn = bgp_get_evpn();
+	if (!bgp_evpn) {
 		flog_err(EC_BGP_NO_DFLT,
-			 "vrf import rt new - def instance not created yet");
+			  "vrf import rt new - evpn instance not created yet");
 		return NULL;
 	}
 
@@ -191,7 +191,7 @@ static struct vrf_irt_node *vrf_import_rt_new(struct ecommunity_val *rt)
 	irt->vrfs = list_new();
 
 	/* Add to hash */
-	if (!hash_get(bgp_def->vrf_import_rt_hash, irt, hash_alloc_intern)) {
+	if (!hash_get(bgp_evpn->vrf_import_rt_hash, irt, hash_alloc_intern)) {
 		XFREE(MTYPE_BGP_EVPN_VRF_IMPORT_RT, irt);
 		return NULL;
 	}
@@ -204,16 +204,16 @@ static struct vrf_irt_node *vrf_import_rt_new(struct ecommunity_val *rt)
  */
 static void vrf_import_rt_free(struct vrf_irt_node *irt)
 {
-	struct bgp *bgp_def = NULL;
+	struct bgp *bgp_evpn = NULL;
 
-	bgp_def = bgp_get_default();
-	if (!bgp_def) {
+	bgp_evpn = bgp_get_evpn();
+	if (!bgp_evpn) {
 		flog_err(EC_BGP_NO_DFLT,
-			 "vrf import rt free - def instance not created yet");
+			  "vrf import rt free - evpn instance not created yet");
 		return;
 	}
 
-	hash_release(bgp_def->vrf_import_rt_hash, irt);
+	hash_release(bgp_evpn->vrf_import_rt_hash, irt);
 	list_delete(&irt->vrfs);
 	XFREE(MTYPE_BGP_EVPN_VRF_IMPORT_RT, irt);
 }
@@ -224,20 +224,21 @@ static void vrf_import_rt_free(struct vrf_irt_node *irt)
  */
 static struct vrf_irt_node *lookup_vrf_import_rt(struct ecommunity_val *rt)
 {
-	struct bgp *bgp_def = NULL;
+	struct bgp *bgp_evpn = NULL;
 	struct vrf_irt_node *irt;
 	struct vrf_irt_node tmp;
 
-	bgp_def = bgp_get_default();
-	if (!bgp_def) {
-		flog_err(EC_BGP_NO_DFLT,
-			 "vrf import rt lookup - def instance not created yet");
+	bgp_evpn = bgp_get_evpn();
+	if (!bgp_evpn) {
+		flog_err(
+			EC_BGP_NO_DFLT,
+			"vrf import rt lookup - evpn instance not created yet");
 		return NULL;
 	}
 
 	memset(&tmp, 0, sizeof(struct vrf_irt_node));
 	memcpy(&tmp.rt, rt, ECOMMUNITY_SIZE);
-	irt = hash_lookup(bgp_def->vrf_import_rt_hash, &tmp);
+	irt = hash_lookup(bgp_evpn->vrf_import_rt_hash, &tmp);
 	return irt;
 }
 
@@ -2968,19 +2969,19 @@ static int install_uninstall_routes_for_vrf(struct bgp *bgp_vrf, int install)
 	struct bgp_path_info *pi;
 	int ret;
 	char buf[PREFIX_STRLEN];
-	struct bgp *bgp_def = NULL;
+	struct bgp *bgp_evpn = NULL;
 
 	afi = AFI_L2VPN;
 	safi = SAFI_EVPN;
-	bgp_def = bgp_get_default();
-	if (!bgp_def)
+	bgp_evpn = bgp_get_evpn();
+	if (!bgp_evpn)
 		return -1;
 
 	/* Walk entire global routing table and evaluate routes which could be
 	 * imported into this VRF. Note that we need to loop through all global
 	 * routes to determine which route matches the import rt on vrf
 	 */
-	for (rd_rn = bgp_table_top(bgp_def->rib[afi][safi]); rd_rn;
+	for (rd_rn = bgp_table_top(bgp_evpn->rib[afi][safi]); rd_rn;
 	     rd_rn = bgp_route_next(rd_rn)) {
 		table = bgp_node_get_bgp_table_info(rd_rn);
 		if (!table)
@@ -4127,14 +4128,14 @@ static void free_vni_entry(struct hash_backet *backet, struct bgp *bgp)
  */
 static void evpn_auto_rt_import_add_for_vrf(struct bgp *bgp_vrf)
 {
-	struct bgp *bgp_def = NULL;
+	struct bgp *bgp_evpn = NULL;
 
 	form_auto_rt(bgp_vrf, bgp_vrf->l3vni, bgp_vrf->vrf_import_rtl);
 	UNSET_FLAG(bgp_vrf->vrf_flags, BGP_VRF_IMPORT_RT_CFGD);
 
 	/* Map RT to VRF */
-	bgp_def = bgp_get_default();
-	if (!bgp_def)
+	bgp_evpn = bgp_get_evpn();
+	if (!bgp_evpn)
 		return;
 	bgp_evpn_map_vrf_to_its_rts(bgp_vrf);
 }
@@ -4166,12 +4167,12 @@ static void evpn_auto_rt_export_delete_for_vrf(struct bgp *bgp_vrf)
 
 static void bgp_evpn_handle_export_rt_change_for_vrf(struct bgp *bgp_vrf)
 {
-	struct bgp *bgp_def = NULL;
+	struct bgp *bgp_evpn = NULL;
 	struct listnode *node = NULL;
 	struct bgpevpn *vpn = NULL;
 
-	bgp_def = bgp_get_default();
-	if (!bgp_def)
+	bgp_evpn = bgp_get_evpn();
+	if (!bgp_evpn)
 		return;
 
 	/* update all type-5 routes */
@@ -4179,7 +4180,7 @@ static void bgp_evpn_handle_export_rt_change_for_vrf(struct bgp *bgp_vrf)
 
 	/* update all type-2 routes */
 	for (ALL_LIST_ELEMENTS_RO(bgp_vrf->l2vnis, node, vpn))
-		update_routes_for_vni(bgp_def, vpn);
+		update_routes_for_vni(bgp_evpn, vpn);
 }
 
 /*
