@@ -5420,14 +5420,15 @@ int bgp_evpn_local_l3vni_add(vni_t l3vni, vrf_id_t vrf_id, struct ethaddr *rmac,
 	}
 	as = bgp_evpn->as;
 
-	/* if the BGP vrf instance doesn't exist - create one */
-	bgp_vrf = bgp_lookup_by_name(vrf_id_to_name(vrf_id));
+	/* if the BGP vrf instance doesnt exist - create one */
+	bgp_vrf = bgp_lookup_by_vrf_id(vrf_id);
 	if (!bgp_vrf) {
 
 		int ret = 0;
 
 		ret = bgp_get(&bgp_vrf, &as, vrf_id_to_name(vrf_id),
-			      BGP_INSTANCE_TYPE_VRF);
+			      vrf_id == VRF_DEFAULT ? BGP_INSTANCE_TYPE_DEFAULT
+						    : BGP_INSTANCE_TYPE_VRF);
 		switch (ret) {
 		case BGP_ERR_MULTIPLE_INSTANCE_NOT_SET:
 			flog_err(EC_BGP_MULTI_INSTANCE,
