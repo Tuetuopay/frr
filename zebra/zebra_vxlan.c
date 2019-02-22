@@ -8823,9 +8823,6 @@ void zebra_vxlan_advertise_all_vni(ZAPI_HANDLER_ARGS)
 		/* Read neighbors */
 		neigh_read(zvrf->zns);
 	} else {
-		/* Fallback to the default VRF. */
-		zvrf_default->evpn_vrf_id = VRF_DEFAULT;
-
 		/* Cleanup VTEPs for all VNIs - uninstall from
 		 * kernel and free entries.
 		 */
@@ -8833,6 +8830,9 @@ void zebra_vxlan_advertise_all_vni(ZAPI_HANDLER_ARGS)
 
 		/* cleanup all l3vnis */
 		hash_iterate(zrouter.l3vni_table, zl3vni_cleanup_all, NULL);
+
+		/* Fallback to the default VRF. */
+		zvrf_default->evpn_vrf_id = VRF_DEFAULT;
 	}
 
 stream_failure:
