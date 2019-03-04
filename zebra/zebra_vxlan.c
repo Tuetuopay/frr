@@ -8571,8 +8571,8 @@ void zebra_vxlan_flood_control(ZAPI_HANDLER_ARGS)
 	struct stream *s;
 	enum vxlan_flood_control flood_ctrl;
 
-	if (zvrf_id(zvrf) != VRF_DEFAULT) {
-		zlog_err("EVPN flood control for non-default VRF %u",
+	if (zvrf_id(zvrf) != zebra_vrf_get_evpn_id()) {
+		zlog_err("EVPN flood control for non-EVPN VRF %u",
 			 zvrf_id(zvrf));
 		return;
 	}
