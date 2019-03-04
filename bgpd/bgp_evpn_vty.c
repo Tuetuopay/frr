@@ -3203,9 +3203,9 @@ DEFPY(bgp_evpn_advertise_svi_ip,
 	if (!bgp)
 		return CMD_WARNING;
 
-	if (bgp->vrf_id != VRF_DEFAULT) {
+	if (!bgp->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
