@@ -1006,7 +1006,7 @@ static int bgp_show_ethernet_vpn(struct vty *vty, struct prefix_rd *prd,
 	json_object *json_scode = NULL;
 	json_object *json_ocode = NULL;
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (bgp == NULL) {
 		if (!use_json)
 			vty_out(vty, "No BGP process is configured\n");
@@ -2915,9 +2915,9 @@ DEFUN (bgp_evpn_advertise_default_gw,
 	if (!bgp)
 		return CMD_WARNING;
 
-	if (bgp->vrf_id != VRF_DEFAULT) {
+	if (!bgp->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under the EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
@@ -2937,9 +2937,9 @@ DEFUN (no_bgp_evpn_advertise_default_gw,
 	if (!bgp)
 		return CMD_WARNING;
 
-	if (bgp->vrf_id != VRF_DEFAULT) {
+	if (!bgp->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under the EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
@@ -3064,9 +3064,9 @@ DEFPY (dup_addr_detection,
 	if (!bgp_vrf)
 		return CMD_WARNING;
 
-	if (bgp_vrf->vrf_id != VRF_DEFAULT) {
+	if (!bgp_vrf->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under the EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
@@ -3096,9 +3096,9 @@ DEFPY (dup_addr_detection_auto_recovery,
 	if (!bgp_vrf)
 		return CMD_WARNING;
 
-	if (bgp_vrf->vrf_id != VRF_DEFAULT) {
+	if (!bgp_vrf->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under the EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
@@ -3131,9 +3131,9 @@ DEFPY (no_dup_addr_detection,
 	if (!bgp_vrf)
 		return CMD_WARNING;
 
-	if (bgp_vrf->vrf_id != VRF_DEFAULT) {
+	if (!bgp_vrf->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under the EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
@@ -3203,9 +3203,9 @@ DEFPY(bgp_evpn_advertise_svi_ip,
 	if (!bgp)
 		return CMD_WARNING;
 
-	if (bgp->vrf_id != VRF_DEFAULT) {
+	if (!bgp->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
@@ -3462,7 +3462,7 @@ DEFUN(show_bgp_l2vpn_evpn_vni,
 
 	uj = use_json(argc, argv);
 
-	bgp_def = bgp_get_default();
+	bgp_def = bgp_get_evpn();
 	if (!bgp_def)
 		return CMD_WARNING;
 
@@ -3557,7 +3557,7 @@ DEFUN(show_bgp_l2vpn_evpn_es,
 	memset(&esi, 0, sizeof(esi));
 	uj = use_json(argc, argv);
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp)
 		return CMD_WARNING;
 
@@ -3640,7 +3640,7 @@ DEFUN(show_bgp_l2vpn_evpn_route,
 
 	uj = use_json(argc, argv);
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp)
 		return CMD_WARNING;
 
@@ -3701,7 +3701,7 @@ DEFUN(show_bgp_l2vpn_evpn_route_rd,
 	bool uj = false;
 	json_object *json = NULL;
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp)
 		return CMD_WARNING;
 
@@ -3777,7 +3777,7 @@ DEFUN(show_bgp_l2vpn_evpn_route_rd_macip,
 	memset(&mac, 0, sizeof(struct ethaddr));
 	memset(&ip, 0, sizeof(struct ipaddr));
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp)
 		return CMD_WARNING;
 
@@ -3841,7 +3841,7 @@ DEFUN(show_bgp_l2vpn_evpn_route_esi,
 	json_object *json = NULL;
 
 	memset(&esi, 0, sizeof(esi));
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp)
 		return CMD_WARNING;
 
@@ -3894,7 +3894,7 @@ DEFUN(show_bgp_l2vpn_evpn_route_vni, show_bgp_l2vpn_evpn_route_vni_cmd,
 	bool uj = false;
 	json_object *json = NULL;
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp)
 		return CMD_WARNING;
 
@@ -3966,7 +3966,7 @@ DEFUN(show_bgp_l2vpn_evpn_route_vni_macip,
 	bool uj = false;
 	json_object *json = NULL;
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp)
 		return CMD_WARNING;
 
@@ -4034,7 +4034,7 @@ DEFUN(show_bgp_l2vpn_evpn_route_vni_multicast,
 	bool uj = false;
 	json_object *json = NULL;
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp)
 		return CMD_WARNING;
 
@@ -4090,7 +4090,7 @@ DEFUN(show_bgp_l2vpn_evpn_route_vni_all,
 	bool uj = false;
 	json_object *json = NULL;
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp)
 		return CMD_WARNING;
 
@@ -4139,7 +4139,7 @@ DEFUN(show_bgp_l2vpn_evpn_vrf_import_rt,
 	struct bgp *bgp_def = NULL;
 	json_object *json = NULL;
 
-	bgp_def = bgp_get_default();
+	bgp_def = bgp_get_evpn();
 	if (!bgp_def)
 		return CMD_WARNING;
 
@@ -4175,7 +4175,7 @@ DEFUN(show_bgp_l2vpn_evpn_import_rt,
 	bool uj = false;
 	json_object *json = NULL;
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp)
 		return CMD_WARNING;
 
@@ -4206,9 +4206,9 @@ DEFUN(test_adv_evpn_type4_route,
 	struct bgp *bgp;
 	struct ipaddr vtep_ip;
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp) {
-		vty_out(vty, "%%Default BGP instance not yet created\n");
+		vty_out(vty, "%%EVPN BGP instance not yet created\n");
 		return CMD_WARNING;
 	}
 
@@ -4240,9 +4240,9 @@ DEFUN(test_withdraw_evpn_type4_route,
 	struct bgp *bgp;
 	struct ipaddr vtep_ip;
 
-	bgp = bgp_get_default();
+	bgp = bgp_get_evpn();
 	if (!bgp) {
-		vty_out(vty, "%%Default BGP instance not yet created\n");
+		vty_out(vty, "%%EVPN BGP instance not yet created\n");
 		return CMD_WARNING;
 	}
 
@@ -4520,9 +4520,9 @@ DEFUN (bgp_evpn_vni_rd,
 	if (!bgp)
 		return CMD_WARNING;
 
-	if (bgp->vrf_id != VRF_DEFAULT) {
+	if (!bgp->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
@@ -4556,9 +4556,9 @@ DEFUN (no_bgp_evpn_vni_rd,
 	if (!bgp)
 		return CMD_WARNING;
 
-	if (bgp->vrf_id != VRF_DEFAULT) {
+	if (!bgp->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
@@ -4596,9 +4596,9 @@ DEFUN (no_bgp_evpn_vni_rd_without_val,
 	if (!bgp)
 		return CMD_WARNING;
 
-	if (bgp->vrf_id != VRF_DEFAULT) {
+	if (!bgp->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
@@ -4925,9 +4925,9 @@ DEFUN (bgp_evpn_vni_rt,
 	if (!bgp)
 		return CMD_WARNING;
 
-	if (bgp->vrf_id != VRF_DEFAULT) {
+	if (!bgp->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
@@ -4993,9 +4993,9 @@ DEFUN (no_bgp_evpn_vni_rt,
 	if (!bgp)
 		return CMD_WARNING;
 
-	if (bgp->vrf_id != VRF_DEFAULT) {
+	if (!bgp->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
@@ -5092,9 +5092,9 @@ DEFUN (no_bgp_evpn_vni_rt_without_val,
 	if (!bgp)
 		return CMD_WARNING;
 
-	if (bgp->vrf_id != VRF_DEFAULT) {
+	if (!bgp->advertise_all_vni) {
 		vty_out(vty,
-			"This command is only supported under Default VRF\n");
+			"This command is only supported under EVPN VRF\n");
 		return CMD_WARNING;
 	}
 
