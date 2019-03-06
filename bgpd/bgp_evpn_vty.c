@@ -2954,9 +2954,18 @@ DEFUN (bgp_evpn_advertise_all_vni,
        "Advertise All local VNIs\n")
 {
 	struct bgp *bgp = VTY_GET_CONTEXT(bgp);
+	struct bgp *bgp_evpn = NULL;
 
 	if (!bgp)
 		return CMD_WARNING;
+
+	bgp_evpn = bgp_get_evpn();
+	if (bgp_evpn) {
+		vty_out(vty, "%% Please unconfigure EVPN in VRF %s\n",
+			bgp_evpn->name);
+		return CMD_WARNING_CONFIG_FAILED;
+	}
+
 	evpn_set_advertise_all_vni(bgp);
 	return CMD_SUCCESS;
 }
