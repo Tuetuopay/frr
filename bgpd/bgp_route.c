@@ -5159,6 +5159,17 @@ void bgp_update(struct peer *peer, const struct prefix *p, uint32_t addpath_id,
 		}
 
 	new_attr = *attr;
+	if (CHECK_FLAG(peer->af_flags[afi][safi], PEER_FLAG_SOFT_RECONFIG)) {
+		/* For soft-reconfiguration, the attributes are interned. If
+		 * the EVPN attributes are set, they are ref-counted. We
+		 * perform a shallow-copy of the attributes above, thus need to
+		 * increase the EVPN refcount to avoid a double-free later on.
+		 */
+		struct bgp_route_evpn *bre = bgp_attr_get_evpn_overlay(attr);
+		if (bre && bre->refcnt)
+			bre->refcnt++;
+	}
+
 	/*
 	 * If bgp_update is called with soft_reconfig set then
 	 * attr is interned. In this case, do not overwrite the
