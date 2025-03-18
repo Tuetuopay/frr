@@ -546,6 +546,8 @@ static void *evpn_overlay_hash_alloc(void *p)
 
 void evpn_overlay_free(struct bgp_route_evpn *bre)
 {
+	if (bre && bre->refcnt)
+		assert(!"Freeing a `struct bgp_route_evpn` with a non-zero reference count");
 	XFREE(MTYPE_BGP_EVPN_OVERLAY, bre);
 }
 
