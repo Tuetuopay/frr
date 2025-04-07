@@ -21236,6 +21236,8 @@ void bgp_vty_init(void)
 	install_element(BGP_VPNV4_NODE, &no_neighbor_disable_addpath_rx_cmd);
 	install_element(BGP_VPNV6_NODE, &neighbor_disable_addpath_rx_cmd);
 	install_element(BGP_VPNV6_NODE, &no_neighbor_disable_addpath_rx_cmd);
+	install_element(BGP_EVPN_NODE, &neighbor_disable_addpath_rx_cmd);
+	install_element(BGP_EVPN_NODE, &no_neighbor_disable_addpath_rx_cmd);
 
 	/* "neighbor addpath-tx-all-paths" commands.*/
 	install_element(BGP_NODE, &neighbor_addpath_tx_all_paths_hidden_cmd);
@@ -21256,6 +21258,8 @@ void bgp_vty_init(void)
 	install_element(BGP_VPNV4_NODE, &no_neighbor_addpath_tx_all_paths_cmd);
 	install_element(BGP_VPNV6_NODE, &neighbor_addpath_tx_all_paths_cmd);
 	install_element(BGP_VPNV6_NODE, &no_neighbor_addpath_tx_all_paths_cmd);
+	install_element(BGP_EVPN_NODE, &neighbor_addpath_tx_all_paths_cmd);
+	install_element(BGP_EVPN_NODE, &no_neighbor_addpath_tx_all_paths_cmd);
 
 	/* "neighbor addpath-tx-best-selected" commands.*/
 	install_element(BGP_IPV4_NODE,
@@ -21290,6 +21294,8 @@ void bgp_vty_init(void)
 			&neighbor_addpath_tx_best_selected_paths_cmd);
 	install_element(BGP_VPNV6_NODE,
 			&no_neighbor_addpath_tx_best_selected_paths_cmd);
+	install_element(BGP_EVPN_NODE, &neighbor_addpath_tx_best_selected_paths_cmd);
+	install_element(BGP_EVPN_NODE, &no_neighbor_addpath_tx_best_selected_paths_cmd);
 
 	/* "neighbor addpath-tx-bestpath-per-AS" commands.*/
 	install_element(BGP_NODE,
@@ -21328,6 +21334,8 @@ void bgp_vty_init(void)
 			&neighbor_addpath_tx_bestpath_per_as_cmd);
 	install_element(BGP_VPNV6_NODE,
 			&no_neighbor_addpath_tx_bestpath_per_as_cmd);
+	install_element(BGP_EVPN_NODE, &neighbor_addpath_tx_bestpath_per_as_cmd);
+	install_element(BGP_EVPN_NODE, &no_neighbor_addpath_tx_bestpath_per_as_cmd);
 
 	/* "neighbor addpath-rx-paths-limit" commands.*/
 	install_element(BGP_NODE, &neighbor_addpath_paths_limit_cmd);
@@ -21348,6 +21356,8 @@ void bgp_vty_init(void)
 	install_element(BGP_VPNV4_NODE, &no_neighbor_addpath_paths_limit_cmd);
 	install_element(BGP_VPNV6_NODE, &neighbor_addpath_paths_limit_cmd);
 	install_element(BGP_VPNV6_NODE, &no_neighbor_addpath_paths_limit_cmd);
+	install_element(BGP_EVPN_NODE, &neighbor_addpath_paths_limit_cmd);
+	install_element(BGP_EVPN_NODE, &no_neighbor_addpath_paths_limit_cmd);
 
 	/* "neighbor sender-as-path-loop-detection" commands. */
 	install_element(BGP_NODE, &neighbor_aspath_loop_detection_cmd);
